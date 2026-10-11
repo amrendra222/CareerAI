@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>CareerAI — AI Career Intelligence</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<!-- =====================================================
+     CLERK
+===================================================== -->
+
+<script
+    defer
+    crossorigin="anonymous"
+    src="https://immune-foxhound-9261.clerk.accounts.dev/npm/@clerk/ui@1/dist/ui.browser.js">
+</script>
+
+<script
+    defer
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_aW1tdW5lLWZveGhvdW5kLTkyNjEuY2xlcmsuYWNjb3VudHMuZGV2JA"
+    src="https://immune-foxhound-9261.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js">
+</script>
+
+
+<!-- =====================================================
+     CLERK INITIALIZATION
+===================================================== -->
+
+<script>
+
+window.addEventListener(
+    "load",
+    async function () {
+
+        try {
+
+            await Clerk.load({
+
+                ui: {
+                    ClerkUI:
+                        window.__internal_ClerkUICtor
+                },
+
+                appearance: {
+
+                    variables: {
+
+                        colorPrimary:
+                            "#7c5cff",
+
+                        colorPrimaryForeground:
+                            "#ffffff",
+
+                        colorBackground:
+                            "#101522",
+
+                        colorForeground:
+                            "#f4f7ff",
+
+                        colorInputBackground:
+                            "#0b0f19",
+
+                        colorInputText:
+                            "#f4f7ff",
+
+                        colorMutedForeground:
+                            "#8c95aa",
+
+                        colorBorder:
+                            "rgba(255,255,255,0.10)",
+
+                        borderRadius:
+                            "12px",
+
+                        fontFamily:
+                            "Inter, Segoe UI, Arial, sans-serif"
+                    },
+
+
+                    elements: {
+
+                        card: {
+                            background:
+                                "transparent",
+
+                            border:
+                                "none",
+
+                            boxShadow:
+                                "none",
+
+                            width:
+                                "100%"
+                        },
+
+                        rootBox: {
+                            width:
+                                "100%"
+                        },
+
+                        headerTitle: {
+                            color:
+                                "#f4f7ff"
+                        },
+
+                        headerSubtitle: {
+                            color:
+                                "#8c95aa"
+                        },
+
+                        socialButtonsBlockButton: {
+
+                            backgroundColor:
+                                "#151b2b",
+
+                            border:
+                                "1px solid rgba(255,255,255,0.10)",
+
+                            color:
+                                "#f4f7ff"
+                        },
+
+                        formFieldInput: {
+
+                            backgroundColor:
+                                "#0b0f19",
+
+                            border:
+                                "1px solid rgba(255,255,255,0.10)",
+
+                            color:
+                                "#f4f7ff"
+                        },
+
+                        formButtonPrimary: {
+
+                            background:
+                                "linear-gradient(135deg,#7c5cff,#5b4be7)",
+
+                            color:
+                                "#ffffff"
+                        },
+
+                        footerActionLink: {
+                            color:
+                                "#9b83ff"
+                        },
+
+                        footerActionText: {
+                            color:
+                                "#8c95aa"
+                        }
+
+                    },
+
+
+                    options: {
+
+                        socialButtonsPlacement:
+                            "top",
+
+                        socialButtonsVariant:
+                            "blockButton"
+
+                    }
+
+                }
+
+            });
+
+
+            const authScreen =
+                document.getElementById(
+                    "authScreen"
+                );
+
+
+            const signIn =
+                document.getElementById(
+                    "clerkSignIn"
+                );
+
+
+            const application =
+                document.getElementById(
+                    "application"
+                );
+
+
+            function updateUser() {
+
+                const element =
+                    document.getElementById(
+                        "userNameDisplay"
+                    );
+
+
+                if (
+                    element &&
+                    Clerk.user
+                ) {
+
+                    element.textContent =
+                        Clerk.user.firstName ||
+                        Clerk.user.fullName ||
+                        Clerk.user
+                            .primaryEmailAddress
+                            ?.emailAddress ||
+                        "CareerAI User";
+
+                }
+
+            }
+
+
+            function showApplication() {
+
+                authScreen.classList.add(
+                    "hidden"
+                );
+
+                application.classList.remove(
+                    "hidden"
+                );
+
+                updateUser();
+
+            }
+
+
+            function showLogin() {
+
+                authScreen.classList.remove(
+                    "hidden"
+                );
+
+                application.classList.add(
+                    "hidden"
+                );
+
+
+                if (
+                    signIn &&
+                    !signIn.hasChildNodes()
+                ) {
+
+                    Clerk.mountSignIn(
+                        signIn
+                    );
+
+                }
+
+            }
+
+
+            if (
+                Clerk.isSignedIn
+            ) {
+
+                showApplication();
+
+            }
+
+            else {
+
+                showLogin();
+
+            }
+
+
+            Clerk.addListener(
+                function () {
+
+                    if (
+                        Clerk.isSignedIn
+                    ) {
+
+                        showApplication();
+
+                    }
+
+                    else {
+
+                        showLogin();
+
+                    }
+
+                }
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "CareerAI Clerk error:",
+                error
+            );
+
+
+            const errorBox =
+                document.getElementById(
+                    "clerkError"
+                );
+
+
+            if (errorBox) {
+
+                errorBox.textContent =
+                    "Authentication service could not be loaded. Please refresh the page.";
+
+                errorBox.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+        }
+
+    }
+
+);
+
+</script>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     CLERK LOGIN
+===================================================== -->
+
+<div
+    id="authScreen"
+    class="auth-screen hidden"
+>
+
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            ✦
+        </div>
+
+
+        <div class="auth-title">
+
+            <h1>
+                CareerAI
+            </h1>
+
+            <p>
+                AI Career Intelligence Platform
+            </p>
+
+        </div>
+
+
+        <div
+            id="clerkSignIn"
+        ></div>
+
+
+        <div
+            id="clerkError"
+            class="clerk-error hidden"
+        ></div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     MAIN APPLICATION
+===================================================== -->
+
+<div
+    id="application"
+    class="app hidden"
+>
+
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================== -->
+
+    <aside class="sidebar">
+
+
+        <button
+            id="sidebarToggle"
+            class="sidebar-toggle"
+            onclick="toggleSidebar()"
+            title="Collapse sidebar"
+        >
+            ☰
+        </button>
+
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                ✦
+            </div>
+
+
+            <div class="brand-text">
+
+                <strong>
+                    CareerAI
+                </strong>
+
+                <span>
+                    Intelligence Platform
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="navigation">
+
+            <div class="nav-label">
+                WORKSPACE
+            </div>
+
+
+            <button
+                class="nav-item active"
+                data-page="dashboard"
+            >
+
+                <span>
+                    ◈
+                </span>
+
+                Dashboard
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="resume"
+            >
+
+                <span>
+                    ▤
+                </span>
+
+                Resume Intelligence
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="saved-resumes"
+            >
+
+                <span>
+                    ▣
+                </span>
+
+                My Resumes
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="job"
+            >
+
+                <span>
+                    💼
+                </span>
+
+                Job Intelligence
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="matching"
+            >
+
+                <span>
+                    🎯
+                </span>
+
+                Career Matching
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="interview"
+            >
+
+                <span>
+                    🎤
+                </span>
+
+                AI Interview
+
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="ai-status">
+
+                <span class="status-dot"></span>
+
+                AI Engine Online
+
+            </div>
+
+
+            <div class="version">
+                CareerAI v1.0
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =================================================
+         MAIN
+    ================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div>
+
+                <div class="topbar-label">
+                    CAREERAI
+                </div>
+
+                <h1 id="pageTitle">
+                    Career Dashboard
+                </h1>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+
+                <div class="connection">
+
+                    <span class="status-dot"></span>
+
+                    Backend Connected
+
+                </div>
+
+
+                <div
+                    id="userNameDisplay"
+                    class="user-name"
+                >
+                    CareerAI User
+                </div>
+
+
+                <button
+                    class="clear-button"
+                    onclick="clearWorkspace()"
+                >
+                    Clear
+                </button>
+
+
+                <button
+                    class="logout-button"
+                    onclick="logoutFromClerk()"
+                >
+                    Logout
+                </button>
+
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+
+        <section
+            id="dashboard"
+            class="page active-page"
+        >
+
+
+            <div class="page-intro">
+
+                <span class="section-label">
+                    AI CAREER INTELLIGENCE
+                </span>
+
+
+                <h2>
+                    Build your career
+                    with intelligence.
+                </h2>
+
+
+                <p>
+                    Analyze your resume,
+                    understand job requirements,
+                    measure your career fit,
+                    and practice personalized
+                    technical interviews.
+                </p>
+
+            </div>
+
+
+
+            <div class="hero">
+
+
+                <div class="hero-content">
+
+
+                    <span class="hero-label">
+                        ✦ AI-POWERED CAREER PLATFORM
+                    </span>
+
+
+                    <h2>
+                        Build a stronger career
+                        with
+                        <span>
+                            intelligent insights.
+                        </span>
+                    </h2>
+
+
+                    <p>
+                        Upload your resume,
+                        analyze job opportunities,
+                        discover skill gaps and
+                        practice personalized
+                        interviews.
+                    </p>
+
+
+                    <div class="hero-actions">
+
+                        <button
+                            class="primary-button"
+                            onclick="showPage('resume')"
+                        >
+                            Analyze Resume
+                        </button>
+
+
+                        <button
+                            class="secondary-button"
+                            onclick="showPage('interview')"
+                        >
+                            Start Interview
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="hero-orbit">
+
+                    <div class="orbit-ring"></div>
+
+                    <div class="orbit-ring ring-two"></div>
+
+                    <div class="orbit-core">
+                        ✦
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ▤
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Resumes
+                        </span>
+
+                        <strong id="resumeStat">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        💼
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Jobs
+                        </span>
+
+                        <strong id="jobStat">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🎯
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Matches
+                        </span>
+
+                        <strong id="matchStat">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🎤
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Interviews
+                        </span>
+
+                        <strong id="interviewStat">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="section-header">
+
+                <span class="section-label">
+                    WORKSPACE
+                </span>
+
+                <h3>
+                    Quick Actions
+                </h3>
+
+            </div>
+
+
+
+            <div class="workflow-grid">
+
+
+                <div
+                    class="workflow-card"
+                    onclick="showPage('resume')"
+                >
+
+                    <div class="workflow-number">
+                        01
+                    </div>
+
+                    <div class="workflow-icon">
+                        ▤
+                    </div>
+
+                    <h3>
+                        Analyze Resume
+                    </h3>
+
+                    <p>
+                        Extract skills,
+                        experience,
+                        education and
+                        career insights.
+                    </p>
+
+                    <span class="workflow-link">
+                        Analyze →
+                    </span>
+
+                </div>
+
+
+
+                <div
+                    class="workflow-card"
+                    onclick="showPage('job')"
+                >
+
+                    <div class="workflow-number">
+                        02
+                    </div>
+
+                    <div class="workflow-icon">
+                        💼
+                    </div>
+
+                    <h3>
+                        Analyze Job
+                    </h3>
+
+                    <p>
+                        Understand requirements,
+                        skills and responsibilities.
+                    </p>
+
+                    <span class="workflow-link">
+                        Analyze →
+                    </span>
+
+                </div>
+
+
+
+                <div
+                    class="workflow-card"
+                    onclick="showPage('matching')"
+                >
+
+                    <div class="workflow-number">
+                        03
+                    </div>
+
+                    <div class="workflow-icon">
+                        🎯
+                    </div>
+
+                    <h3>
+                        Match Career
+                    </h3>
+
+                    <p>
+                        Compare your resume
+                        with a target job.
+                    </p>
+
+                    <span class="workflow-link">
+                        Match →
+                    </span>
+
+                </div>
+
+
+
+                <div
+                    class="workflow-card"
+                    onclick="showPage('interview')"
+                >
+
+                    <div class="workflow-number">
+                        04
+                    </div>
+
+                    <div class="workflow-icon">
+                        🎤
+                    </div>
+
+                    <h3>
+                        Practice Interview
+                    </h3>
+
+                    <p>
+                        Take a personalized
+                        AI interview based
+                        on your profile.
+                    </p>
+
+                    <span class="workflow-link">
+                        Practice →
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             RESUME
+        ================================================== -->
+
+        <section
+            id="resume"
+            class="page"
+        >
+
+
+            <div class="page-intro">
+
+                <span class="section-label">
+                    RESUME INTELLIGENCE
+                </span>
+
+                <h2>
+                    Understand your resume.
+                </h2>
+
+                <p>
+                    Upload a PDF resume and
+                    CareerAI will analyze it
+                    using AI.
+                </p>
+
+            </div>
+
+
+
+            <div class="workspace-grid">
+
+
+                <div class="panel">
+
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                INPUT
+                            </span>
+
+                            <h3>
+                                Upload Resume
+                            </h3>
+
+                        </div>
+
+
+                        <span class="panel-icon">
+                            ▤
+                        </span>
+
+                    </div>
+
+
+                    <div class="upload-area">
+
+
+                        <input
+                            type="file"
+                            id="resumeFile"
+                            accept=".pdf"
+                            hidden
+                        >
+
+
+                        <label
+                            for="resumeFile"
+                            class="upload-box"
+                        >
+
+                            <div class="upload-icon">
+                                ↑
+                            </div>
+
+                            <strong>
+                                Choose Resume PDF
+                            </strong>
+
+                            <span id="resumeFileName">
+                                No file selected
+                            </span>
+
+                            <small>
+                                PDF files only
+                            </small>
+
+                        </label>
+
+
+                        <button
+                            class="primary-button full"
+                            onclick="analyzeResume()"
+                        >
+                            Analyze Resume
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="panel">
+
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                AI OUTPUT
+                            </span>
+
+                            <h3>
+                                Resume Analysis
+                            </h3>
+
+                        </div>
+
+
+                        <span class="panel-icon">
+                            ✦
+                        </span>
+
+                    </div>
+
+
+                    <div id="resumeResult">
+
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                ✦
+                            </div>
+
+                            <h3>
+                                Resume Analysis
+                            </h3>
+
+                            <p>
+                                Your AI-generated
+                                resume intelligence
+                                will appear here.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             SAVED RESUMES
+        ================================================== -->
+
+        <section
+            id="saved-resumes"
+            class="page"
+        >
+
+
+            <div class="page-intro">
+
+                <span class="section-label">
+                    PERSONAL LIBRARY
+                </span>
+
+                <h2>
+                    My Resumes
+                </h2>
+
+                <p>
+                    Resumes saved in your
+                    personal CareerAI account.
+                </p>
+
+            </div>
+
+            <div class="resume-library-actions">
+
+    <button
+        class="secondary-button"
+        onclick="removeDuplicateResumes()"
+    >
+        Remove Duplicates
+    </button>
+
+    <button
+        class="delete-all-button"
+        onclick="deleteAllResumes()"
+    >
+        Clear All Resumes
+    </button>
+
+</div>
+
+
+            <div
+                id="savedResumes"
+                class="saved-resumes-grid"
+            >
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ▣
+                    </div>
+
+                    <h3>
+                        Loading resumes...
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             JOB
+        ================================================== -->
+
+        <section
+            id="job"
+            class="page"
+        >
+
+
+            <div class="page-intro">
+
+                <span class="section-label">
+                    JOB INTELLIGENCE
+                </span>
+
+                <h2>
+                    Understand the target role.
+                </h2>
+
+                <p>
+                    Upload a job description
+                    and extract the requirements
+                    with AI.
+                </p>
+
+            </div>
+
+
+
+            <div class="workspace-grid">
+
+
+                <div class="panel">
+
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                INPUT
+                            </span>
+
+                            <h3>
+                                Upload Job Description
+                            </h3>
+
+                        </div>
+
+
+                        <span class="panel-icon">
+                            💼
+                        </span>
+
+                    </div>
+
+
+                    <div class="upload-area">
+
+
+                        <input
+                            type="file"
+                            id="jobFile"
+                            accept=".pdf"
+                            hidden
+                        >
+
+
+                        <label
+                            for="jobFile"
+                            class="upload-box"
+                        >
+
+                            <div class="upload-icon">
+                                ↑
+                            </div>
+
+                            <strong>
+                                Choose Job PDF
+                            </strong>
+
+                            <span id="jobFileName">
+                                No file selected
+                            </span>
+
+                            <small>
+                                PDF files only
+                            </small>
+
+                        </label>
+
+
+                        <button
+                            class="primary-button full"
+                            onclick="analyzeJob()"
+                        >
+                            Analyze Job
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="panel">
+
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                AI OUTPUT
+                            </span>
+
+                            <h3>
+                                Job Analysis
+                            </h3>
+
+                        </div>
+
+
+                        <span class="panel-icon">
+                            ✦
+                        </span>
+
+                    </div>
+
+
+                    <div id="jobResult">
+
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                ◈
+                            </div>
+
+                            <h3>
+                                Job Analysis
+                            </h3>
+
+                            <p>
+                                AI-extracted job
+                                requirements will
+                                appear here.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             MATCHING
+        ================================================== -->
+
+        <section
+            id="matching"
+            class="page"
+        >
+
+
+            <div class="page-intro">
+
+                <span class="section-label">
+                    CAREER INTELLIGENCE
+                </span>
+
+                <h2>
+                    Measure your career fit.
+                </h2>
+
+                <p>
+                    Compare your resume
+                    against the target job.
+                </p>
+
+            </div>
+
+
+
+            <div class="panel">
+
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            MATCH ENGINE
+                        </span>
+
+                        <h3>
+                            Resume vs Job
+                        </h3>
+
+                    </div>
+
+
+                    <span class="panel-icon">
+                        ◉
+                    </span>
+
+                </div>
+
+
+
+                <div class="matching-selection">
+
+
+                    <div class="selection-card">
+
+                        <span>
+                            Resume
+                        </span>
+
+                        <select
+                            id="matchingResume"
+                        >
+
+                            <option value="">
+                                Select analyzed resume
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="selection-card">
+
+                        <span>
+                            Target Job
+                        </span>
+
+                        <select
+                            id="matchingJob"
+                        >
+
+                            <option value="">
+                                Select analyzed job
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <button
+                        class="primary-button"
+                        onclick="runMatching()"
+                    >
+                        Calculate Career Match
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <div
+                id="matchResult"
+                class="panel result-panel hidden"
+            >
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            AI RESULT
+                        </span>
+
+                        <h3>
+                            Career Fit Analysis
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             INTERVIEW
+        ================================================== -->
+
+        <section
+            id="interview"
+            class="page"
+        >
+
+
+            <div class="page-intro">
+
+                <span class="section-label">
+                    AI TECHNICAL INTERVIEW
+                </span>
+
+                <h2>
+                    Practice like a real interview.
+                </h2>
+
+                <p>
+                    CareerAI generates adaptive
+                    technical questions based on
+                    your resume and target role.
+                </p>
+
+            </div>
+
+
+
+            <div
+                id="interviewSetup"
+                class="panel"
+            >
+
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            INTERVIEW SETUP
+                        </span>
+
+                        <h3>
+                            Start AI Interview
+                        </h3>
+
+                    </div>
+
+
+                    <span class="panel-icon">
+                        ◎
+                    </span>
+
+                </div>
+
+
+
+                <div
+                    class="interview-setup-grid"
+                >
+
+
+                    <div class="selection-card">
+
+                        <span>
+                            Resume
+                        </span>
+
+                        <strong
+                            id="interviewResumeLabel"
+                        >
+                            Uses selected resume
+                        </strong>
+
+                    </div>
+
+
+                    <div class="selection-card">
+
+                        <span>
+                            Target Job
+                        </span>
+
+                        <strong
+                            id="interviewJobLabel"
+                        >
+                            Uses selected job
+                        </strong>
+
+                    </div>
+
+
+                    <div class="difficulty-card">
+
+                        <label
+                            for="difficulty"
+                        >
+                            Difficulty
+                        </label>
+
+                        <select
+                            id="difficulty"
+                        >
+
+                            <option value="easy">
+                                Easy
+                            </option>
+
+                            <option
+                                value="medium"
+                                selected
+                            >
+                                Medium
+                            </option>
+
+                            <option value="hard">
+                                Hard
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <button
+                    class="primary-button"
+                    onclick="startInterview()"
+                >
+                    Start Interview
+                </button>
+
+
+            </div>
+
+
+
+            <div
+                id="interviewPanel"
+                class="panel hidden"
+            >
+
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span
+                            class="section-label"
+                            id="questionCounter"
+                        >
+                            Question 1
+                        </span>
+
+                        <h3>
+                            Technical Question
+                        </h3>
+
+                    </div>
+
+
+                    <span class="panel-icon">
+                        ?
+                    </span>
+
+                </div>
+
+
+
+                <div class="question-box">
+
+                    <div
+                        id="questionText"
+                        class="question-text"
+                    >
+                        Loading question...
+                    </div>
+
+                </div>
+
+
+
+                <textarea
+                    id="answerInput"
+                    class="answer-input"
+                    placeholder="Type your answer here..."
+                    rows="8"
+                ></textarea>
+
+
+
+                <div class="interview-actions">
+
+                    <button
+                        class="primary-button"
+                        onclick="submitAnswer()"
+                    >
+                        Submit Answer
+                    </button>
+
+
+                    <button
+                        class="secondary-button"
+                        onclick="finishInterview()"
+                    >
+                        Finish Interview
+                    </button>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div
+                id="evaluationPanel"
+                class="panel hidden"
+            >
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            AI EVALUATION
+                        </span>
+
+                        <h3>
+                            Answer Feedback
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="evaluationContent"
+                ></div>
+
+            </div>
+
+
+
+            <div
+                id="finalReport"
+                class="panel hidden"
+            >
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            FINAL REPORT
+                        </span>
+
+                        <h3>
+                            Interview Performance
+                        </h3>
+
+                    </div>
+
+
+                    <span class="panel-icon">
+                        ✦
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="reportContent"
+                ></div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- FOOTER -->
+
+        <footer class="app-footer">
+
+            <span>
+                CareerAI
+            </span>
+
+            <span>
+                AI Career Intelligence Platform
+            </span>
+
+            <span>
+                v1.0
+            </span>
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- TOAST -->
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
