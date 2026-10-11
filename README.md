@@ -202,6 +202,4 @@ Before deploying, configure production environment variables, CORS, the frontend
 
 A Generative AI application for resume analysis, career intelligence, and interview preparation.
 
-## 📄 License
 
-A license has not yet been specified. Add an appropriate open-source license if you intend to permit others to reuse, modify, or distribute this project.
